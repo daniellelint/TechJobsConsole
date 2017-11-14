@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -49,7 +50,7 @@ namespace TechJobsConsole
             {
                 string aValue = row[column];
 
-                if (aValue.Contains(value))
+                if (aValue.ToLower() == value)
                 {
                     jobs.Add(row);
                 }
@@ -100,6 +101,31 @@ namespace TechJobsConsole
             }
 
             IsDataLoaded = true;
+        }
+
+        public static List<Dictionary<string, string>> FindByValue(string searchTerm)//--
+        {
+            // should not contain duplicate jobs. searching for "web" should not include the listing twice
+            // new column is added, code will automatically search the new column
+            // utilize loops and collection methods
+
+            //LoadData();
+
+            List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
+
+            foreach (Dictionary<string, string> job in AllJobs)
+            {
+                foreach (string listing in job.Values)
+                {
+
+                    if (listing.ToLower().Contains(searchTerm.ToLower()) && !jobs.Contains(job))
+                    {
+                        jobs.Add(job);
+                    }
+                }
+            }
+
+            return jobs;
         }
 
         /*

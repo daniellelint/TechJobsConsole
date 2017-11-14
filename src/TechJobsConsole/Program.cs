@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 
 namespace TechJobsConsole
 {
@@ -22,6 +25,7 @@ namespace TechJobsConsole
             columnChoices.Add("position type", "Position Type");
             columnChoices.Add("all", "All");
 
+            // 1
             Console.WriteLine("Welcome to LaunchCode's TechJobs App!");
 
             // Allow user to search/list until they manually quit with ctrl+c
@@ -40,10 +44,10 @@ namespace TechJobsConsole
                     }
                     else
                     {
-                        List<string> results = JobData.FindAll(columnChoice);
-
+                        List<string> searchBy = JobData.FindAll(columnChoice);
+                        searchBy.Sort(); //--
                         Console.WriteLine("\n*** All " + columnChoices[columnChoice] + " Values ***");
-                        foreach (string item in results)
+                        foreach (string item in searchBy)
                         {
                             Console.WriteLine(item);
                         }
@@ -57,26 +61,29 @@ namespace TechJobsConsole
                     // What is their search term?
                     Console.WriteLine("\nSearch term: ");
                     string searchTerm = Console.ReadLine();
+                    searchTerm = searchTerm.ToLower();
 
-                    List<Dictionary<string, string>> searchResults;
+                    List<Dictionary<string, string>> userSearch;
 
                     // Fetch results
                     if (columnChoice.Equals("all"))
                     {
-                        Console.WriteLine("Search all fields not yet implemented.");
+                        userSearch = JobData.FindByValue(searchTerm);//--
+                        PrintJobs(userSearch);//--
+                        //Console.WriteLine("Search all fields not yet implemented.");
                     }
                     else
                     {
-                        searchResults = JobData.FindByColumnAndValue(columnChoice, searchTerm);
-                        PrintJobs(searchResults);
+                        userSearch = JobData.FindByColumnAndValue(columnChoice, searchTerm);
+                        PrintJobs(userSearch);
                     }
                 }
             }
         }
 
-        /*
-         * Returns the key of the selected item from the choices Dictionary
-         */
+        
+         // Returns the key of the selected item from the choices Dictionary
+         
         private static string GetUserSelection(string choiceHeader, Dictionary<string, string> choices)
         {
             int choiceIdx;
@@ -92,6 +99,7 @@ namespace TechJobsConsole
 
             do
             {
+                // 2
                 Console.WriteLine("\n" + choiceHeader + " by:");
 
                 for (int j = 0; j < choiceKeys.Length; j++)
@@ -116,9 +124,27 @@ namespace TechJobsConsole
             return choiceKeys[choiceIdx];
         }
 
-        private static void PrintJobs(List<Dictionary<string, string>> someJobs)
+
+        private static void PrintJobs(List<Dictionary<string, string>> listOfJobs)
         {
-            Console.WriteLine("printJobs is not implemented yet");
+            //Console.WriteLine("printJobs is not implemented yet");
+            int counter = listOfJobs.Count;
+            if (counter == 0)
+                Console.WriteLine(" No data found with the search");
+            else
+            {
+                foreach (Dictionary<string, string> job in listOfJobs)
+                {
+                    Console.WriteLine("\n****");
+                    foreach (KeyValuePair<string, string> specificJob in job)
+                    {
+                        if (specificJob.Key != "")
+                            Console.WriteLine(specificJob.Key + " : " + specificJob.Value);
+                    }
+                    Console.WriteLine("****\n\n");
+                }
+
+            }
         }
     }
 }
